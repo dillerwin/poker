@@ -106,8 +106,6 @@ app.get("/api/dealerShowcase", async (req, res) => {
             };
         });
 
-    // console.warn(dealerShowcase);
-
     res.send(dealerShowcase);
 });
 
@@ -123,39 +121,14 @@ app.get("/api/dealer/:dealerName", async (req, res) => {
     res.send(response);
 });
 
-app.get("/api/play/:outfitId", async (req, res) => {
-    console.group("get play/outfit");
-    console.log("req.params.outfitId", req.params.outfitId);
-    console.groupEnd();
-    let outfitId = req.params.outfitId,
-        positions = [],
-        dealerName;
+app.get("/api/play/:dealerName", async (req, res) => {
+    console.log("get play/outfit");
+    let dealerName = req.params.dealerName;
 
-    for (let i = 0; i < outfitId.length; i++) {
-        if (outfitId[i].match(/[A-Z]/) !== null) {
-            positions.push(i);
-        }
-    }
-
-    if (positions.length > 1) {
-        let charArray = outfitId.split("");
-        charArray.splice(-1, 1);
-        charArray.splice(positions[1], 0, " ");
-        dealerName = charArray.join("");
-    } else {
-        dealerName = outfitId.slice(0, -1);
-    }
-
-    let outfit = await Outfit.find({ outfitId: req.params.outfitId });
+    let outfits = await Outfit.find({ dealerName: dealerName });
     let dealer = await Dealer.find({ name: dealerName });
 
-    console.log("dealer", dealer);
-
-    // console.log(dealer.outfits);
-    let outfits = dealer[0].outfits;
-
-    response = outfit.concat([outfits]);
-
+    response = dealer.concat([outfits]);
     res.send(response);
 });
 

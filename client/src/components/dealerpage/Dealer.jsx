@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -9,11 +7,21 @@ export default function Dealer(props) {
 
     const navigate = useNavigate();
 
-    const clickHandle = useCallback((outfitId) => {
-        console.log("clicked");
+    const clickHandle = useCallback((outfitId, dealerName) => {
         props.refreshDealerArray.current = true;
-        navigate("/play/" + outfitId);
-    });
+        props.outfitId.current = outfitId;
+        props.dealerName.current = dealerName;
+        navigate(`/play`);
+    }, []);
+
+    useEffect(() => {
+        fetch("/api/dealerList")
+            .then((res) => res.json())
+            .then((dealers) => {
+                console.log("dealerList firing");
+                props.dealerList.current = dealers;
+            });
+    }, []);
 
     useEffect(() => {
         fetch(`/api/dealer/${dealerName}`)
@@ -21,26 +29,34 @@ export default function Dealer(props) {
             .then((dealerInfo) => {
                 let dealer = dealerInfo.shift(),
                     outfits = dealerInfo;
-                console.log("dealer", dealer);
-                console.log("outfits", outfits);
-                let outfitCard = outfits.map((outfit) => {
-                    return (
-                        <div className="outfit-container" key={outfit.outfitId}>
-                            <img
-                                className="outfitImg"
-                                alt={
-                                    outfit.dealerName +
-                                    outfit.outfitId.slice(-1)
-                                }
-                                src={outfit.pictures[0]}
-                                onClick={() => clickHandle(outfit.outfitId)}
-                            />
-                        </div>
-                    );
-                });
+                let outfitCard = outfits
+                    .sort((a, b) => a.outfitId.localeCompare(b.outfitId))
+                    .map((outfit) => {
+                        return (
+                            <div
+                                className="outfit-container"
+                                key={outfit.outfitId}
+                            >
+                                <img
+                                    className="outfitImg"
+                                    alt={
+                                        outfit.dealerName +
+                                        outfit.outfitId.slice(-1)
+                                    }
+                                    src={outfit.pictures[0]}
+                                    onClick={() =>
+                                        clickHandle(
+                                            outfit.outfitId,
+                                            outfit.dealerName
+                                        )
+                                    }
+                                />
+                            </div>
+                        );
+                    });
                 setOutfits(outfitCard);
             });
-    }, [dealerName]);
+    }, []);
 
     return (
         <>

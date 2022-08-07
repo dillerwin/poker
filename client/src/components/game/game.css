@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-around;
     height: 95vh;
-    border: 1px #ADD8E6 solid;
+    border: 1px #add8e6 solid;
 }
 
 .cardtable-container {
@@ -19,4 +19,13 @@
     border: 1px red dashed;
     height: 100%;
     width: 40%;
+}
+
+.dealerImg {
+    height: 100%;
+}
+
+.flipButton {
+    height: 10em;
+    width: 10em;
 }

@@ -12,15 +12,20 @@ import Dealer from "./components/dealerpage/Dealer";
 import Game from "./components/game/Game";
 
 function App() {
+    const [refresh, setRefresh] = useState(0);
+
     let refreshDealerArray = useRef(true);
     let dealerList = useRef([]);
     let currentDealer = useRef("");
-    let dealerOutfit = useRef("");
+    let dealerOutfits = useRef("");
+    let outfitId = useRef("");
+    let dealerName = useRef("");
 
     useEffect(() => {
         fetch("/api/dealerList")
             .then((res) => res.json())
             .then((dealers) => {
+                console.log("dealerList firing");
                 dealerList.current = dealers;
             });
     }, []);
@@ -33,17 +38,40 @@ function App() {
                 <Routes>
                     {/* TODO: add a login of some kind, maybe with a sneaky terms and conditions page agreement? */}
                     <Route path="/" element={<Home />} />
-                    <Route path="/dealers" element={<Dealers />} />
+                    <Route
+                        path="/dealers"
+                        element={<Dealers dealerList={dealerList} />}
+                    />
                     <Route
                         path="/dealer/:dealerName"
                         element={
-                            <Dealer refreshDealerArray={refreshDealerArray} />
+                            <Dealer
+                                refreshDealerArray={refreshDealerArray}
+                                dealerList={dealerList}
+                                dealerName={dealerName}
+                                outfitId={outfitId}
+                            />
                         }
                     />
                     <Route
-                        path="/play/:outfitId"
+                        path="/play"
                         element={
-                            <Game refreshDealerArray={refreshDealerArray} />
+                            <Game
+                                refreshDealerArray={refreshDealerArray}
+                                dealerList={dealerList}
+                                dealerName={dealerName}
+                                outfitId={outfitId}
+                                refresh={refresh}
+                                setRefresh={() => setRefresh}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/end"
+                        element={
+                            <div className="end">
+                                That's all the models. Go do something else.
+                            </div>
                         }
                     />
                 </Routes>
