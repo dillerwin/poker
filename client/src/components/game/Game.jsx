@@ -60,17 +60,16 @@ export default function Game({
     }
 
     useEffect(() => {
+        console.log("Game useEffect firing");
         if (refreshDealerArray.current) {
+            if (!dealerName.current) {
+                dealerName.current = "Candy";
+                // if (dealerList.current.length === 0) {
+                //     navigate("/");
+                // }
+            }
             refreshDealerArray.current = false;
             picRefArray.current = [];
-            console.log("dealerList.current", dealerList.current);
-            if (!dealerName.current) {
-                dealerName.current =
-                    dealerList.current[
-                        Math.floor(Math.random() * dealerList.current.length)
-                    ];
-            }
-            console.log("dealerName.current", dealerName.current);
             fetch(`/api/play/${dealerName.current}`)
                 .then((res) => res.json())
                 .then((outfitInfo) => {
@@ -98,11 +97,11 @@ export default function Game({
                     setCurrentImg({ image: current.pictures[0], idx: 0 });
                 });
         }
-    });
+    }, []);
 
     return (
         <div className="game-container">
-            <Cardtable advDealer={advDealer} value={value} />
+            <Cardtable advDealer={advDealer} />
             <GameDealer currentImg={currentImg} />
         </div>
     );

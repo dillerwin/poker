@@ -7,14 +7,6 @@
     border: 1px #add8e6 solid;
 }
 
-.cardtable-container {
-    border: 1px yellow dashed;
-    align-content: center;
-    justify-content: center;
-    height: 100%;
-    width: 60%;
-}
-
 .game-dealer-container {
     border: 1px red dashed;
     height: 100%;
@@ -25,7 +17,73 @@
     height: 100%;
 }
 
-.flipButton {
-    height: 10em;
-    width: 10em;
+.cardtable-container {
+    border: 1px yellow dashed;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-between;
+    height: 100%;
+    max-height: 100%;
+    width: 60%;
+}
+
+.dealer-card-container {
+    padding-top: 2em;
+}
+
+.dealer-bank {
+    border: 1px green dashed;
+}
+
+.opponent-cards {
+    border: 1px green dashed;
+}
+
+.bet-container {
+    border: 1px green dashed;
+}
+
+.player-container {
+    border: 1px green dashed;
+}
+
+.calls-container {
+    border: 1px green dashed;
+}
+
+.player-cards {
+    border: 1px green dashed;
+}
+
+.call-bet {
+    border: 1px green dashed;
+}
+
+.fold {
+    border: 1px green dashed;
+}
+
+.chip-container {
+    border: 1px green dashed;
+}
+
+.all-in {
+    border: 1px green dashed;
+}
+
+.hundred-dollar {
+    border: 1px green dashed;
+}
+
+.fifty-dollar {
+    border: 1px green dashed;
+}
+
+.twenty-five-dollar {
+    border: 1px green dashed;
+}
+
+.score-container {
+    border: 1px green dashed;
 }

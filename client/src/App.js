@@ -10,14 +10,13 @@ import Navbar from "./components/navbar/Navbar";
 import Dealers from "./components/dealerpage/Dealers.jsx";
 import Dealer from "./components/dealerpage/Dealer";
 import Game from "./components/game/Game";
+import { getDeck } from "./components/game/Cards";
 
 function App() {
     const [refresh, setRefresh] = useState(0);
 
     let refreshDealerArray = useRef(true);
     let dealerList = useRef([]);
-    let currentDealer = useRef("");
-    let dealerOutfits = useRef("");
     let outfitId = useRef("");
     let dealerName = useRef("");
 
