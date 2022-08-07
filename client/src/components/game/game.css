@@ -1,0 +1,22 @@
+.game-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    height: 95vh;
+    border: 1px #ADD8E6 solid;
+}
+
+.cardtable-container {
+    border: 1px yellow dashed;
+    align-content: center;
+    justify-content: center;
+    height: 100%;
+    width: 60%;
+}
+
+.game-dealer-container {
+    border: 1px red dashed;
+    height: 100%;
+    width: 40%;
+}

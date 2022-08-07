@@ -1,0 +1,82 @@
+/** @format */
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+}
+
+.App {
+    text-align: center;
+}
+
+.dealersBox {
+    display: block;
+    border: 1px red dashed;
+    /* justify-content: center; */
+}
+
+.dealerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 350px));
+    row-gap: 0;
+    /* grid-gap: 1em; */
+    margin-top: 1em;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 2em;
+    border: 1px red dashed;
+}
+
+.dealer-showcase {
+    width: auto;
+    height: 20em;
+}
+
+.outfitImg {
+    width: auto;
+    margin-top: 1em;
+    margin-bottom: 0;
+    height: 30em;
+}
+
+.dealerContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.dealerNameBox {
+    font-size: 2em;
+    height: min-content;
+    border: 1px #00aae4 dashed;
+}
+
+.outfit-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.outfitGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 350px));
+    /* grid-gap: 1em; */
+    margin-top: 1em;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 2em;
+    border: 1px red dashed;
+}
+
+.boardContainer {
+  width: 100vw; 
+  height: 100%;
+  justify-content: center;
+  border: 1px green dashed;
+}
+
+.gameBoard {
+    display: flex;
+    flex-direction: column;
+    border: 1px red dashed;
+}
