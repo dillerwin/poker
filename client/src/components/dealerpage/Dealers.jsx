@@ -21,7 +21,7 @@ export default function Dealers(props) {
                     .map((dealer) => {
                         return (
                             <div
-                                className="dealer-card-container"
+                                className="dealer-showcase-card-container"
                                 key={dealer.dealerName}
                             >
                                 <img

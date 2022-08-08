@@ -1,0 +1,9 @@
+/* THIS IS FOR *DEALER IMAGES*, NOT PLAYING CARDS */
+.dealer-card-container {
+    padding-top: 2em;
+}
+
+/* FOR DEALER IMAGES, NOT CARDS */
+.opponent-cards {
+    border: 1px green dashed;
+}

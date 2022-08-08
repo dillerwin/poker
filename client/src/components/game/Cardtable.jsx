@@ -7,21 +7,76 @@ export default function Cardtable({ advDealer }) {
     const [wager, setWager] = useState(0);
     const [allIn, setAllIn] = useState(false);
     const [callOrBet, setCallOrBet] = useState("Call");
-    const [playerHand, setPlayerHand] = useState([]);
-    const [dealerHand, setDealerHand] = useState([]);
+    const [playerCards, setPlayerCards] = useState([]);
+    const [dealerCards, setDealerCards] = useState([]);
 
     let dealerBank = useRef(1000);
     let playerBank = useRef(1000);
+    let turn = useRef(0);
+    let playerHand = useRef([]);
+    let dealerHand = useRef([]);
+
+    const deck = useRef({});
 
     //TODO:
     // move deck up to Game.jsx
     // see how giving Game useEffect an empty array affects displays
     // try to get deck down to (ideally) one call. Will probably be 2 because of how React is
-    const deck = useRef(getDeck());
 
     useEffect(() => {
-        console.log("deck before shuffle");
-        shuffle(deck.current);
+        if (turn.current === 0) {
+            console.log("shuffling new deck");
+            deck.current = getDeck();
+
+            shuffle(deck.current);
+            turn.current += 1;
+            playerHand.current = draw(deck.current, 5, "player");
+            dealerHand.current = draw(deck.current, 5, "dealer");
+
+            setPlayerCards(
+                playerHand.current.map((card) => {
+                    console.log("card", card);
+
+                    let cardName = `${card.Suit}-${card.Value}`;
+
+                    return (
+                        <div
+                            className="player-card-container"
+                            key={`${card.Suit}-${card.Value}`}
+                        >
+                            <img
+                                className={`player-card ${cardName}`}
+                                alt={`${card.Value} of ${card.Suit}`}
+                                src={`./cardResource/${cardName}.svg`}
+                            ></img>
+                        </div>
+                    );
+                })
+            );
+            setDealerCards(
+                dealerHand.current.map((card) => {
+                    console.log("card", card);
+
+                    return (
+                        <div
+                            className="dealer-card-container"
+                            key={`${card.Suit}-${card.Value}`}
+                        >
+                            <img
+                                className="dealer-card"
+                                alt={`dealer card`}
+                                src={`./cardResource/BACK.svg`}
+                            ></img>
+                        </div>
+                    );
+                })
+            );
+        }
+        if (turn.current === 1) {
+            console.log("turn 1");
+            console.log("playerHand", playerHand.current);
+            console.log("dealerHand", dealerHand.current);
+        }
     }, []);
 
     function addBet(bet) {
@@ -76,54 +131,58 @@ export default function Cardtable({ advDealer }) {
 
     return (
         <div className="cardtable-container">
-            <div className="dealer-card-container">
+            <div className="dealer-container">
                 <div className="dealer-bank">
                     Dealer Bank: ${dealerBank.current}
                 </div>
-                <div className="opponent-cards">Opponent Cards here</div>
+                <div className="dealer-cards-container">{dealerCards}</div>
             </div>
 
-            <div className="bet-container">{wager}</div>
+            <div className="bet-container">Bet: {wager}</div>
 
             <div className="player-container">
+                <div className="player-cards">Player Cards here</div>
                 <div className="calls-container">
-                    <div className="player-cards">Player Cards here</div>
                     <button className="call-bet">{callOrBet}</button>
                     <button className="fold">Fold</button>
                 </div>
                 <div className="chip-container">
-                    <button
-                        className="all-in"
-                        disabled={allIn}
-                        onClick={() => addBet("all")}
-                    >
-                        All In
-                    </button>
-                    <button
-                        className="hundred-dollar"
-                        disabled={allIn}
-                        onClick={() => addBet("hundred")}
-                    >
-                        $100
-                    </button>
-                    <button
-                        className="fifty-dollar"
-                        disabled={allIn}
-                        onClick={() => addBet("fifty")}
-                    >
-                        $50
-                    </button>
-                    <button
-                        className="twenty-five-dollar"
-                        disabled={allIn}
-                        onClick={() => addBet("twenty-five")}
-                    >
-                        $25
-                    </button>
+                    <div className="chip-holder">
+                        <button
+                            className="all-in"
+                            id="chip"
+                            disabled={allIn}
+                            onClick={() => addBet("all")}
+                        >
+                            All In
+                        </button>
+                        <button
+                            className="hundred-dollar"
+                            id="chip"
+                            disabled={allIn}
+                            onClick={() => addBet("hundred")}
+                        >
+                            $100
+                        </button>
+                        <button
+                            className="fifty-dollar"
+                            id="chip"
+                            disabled={allIn}
+                            onClick={() => addBet("fifty")}
+                        >
+                            $50
+                        </button>
+                        <button
+                            className="twenty-five-dollar"
+                            id="chip"
+                            disabled={allIn}
+                            onClick={() => addBet("twenty-five")}
+                        >
+                            $25
+                        </button>
+                    </div>
                 </div>
-                <div className="score-container">
-                    Bank: ${playerBank.current}
-                </div>
+                <div className="player-bank">Bank: ${playerBank.current}</div>
             </div>
         </div>
     );

@@ -5,6 +5,15 @@ import GameDealer from "./GameDealer";
 import { getNewDealer } from "../../util/Functions";
 import { Navigate, useNavigate } from "react-router";
 
+/**
+ * TODO:
+ *  add "next dealer/prev dealer" functionality
+ *  add totally random dealer mode
+ *      - maybe fully random and not delete outfits as they're finished, but shuffle them back in?
+ *      -  should run on an outfitList instead of the dealerList, I think
+ *
+ */
+
 export default function Game({
     refreshDealerArray,
     dealerList,

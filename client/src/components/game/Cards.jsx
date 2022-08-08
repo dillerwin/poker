@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import "./cardResource/BACK.svg";
 
 export const getDeck = () => {
     console.log("getDeck firing");
@@ -26,8 +25,7 @@ export const getDeck = () => {
             let card = {
                 Suit: suits[i],
                 Value: values[x],
-                Face: null,
-                Back: null,
+                Show: null,
             };
             deck.push(card);
         }
@@ -52,18 +50,18 @@ export const shuffle = (deck) => {
  * @param deck
  * @param number
  */
-export const draw = (deck, number) => {
-    let handOne = [];
-    let handTwo = [];
-    for (let i = 0; i < number * 2; i++) {
+export const draw = (deck, number, user) => {
+    let hand = [];
+    for (let i = 0; i < number; i++) {
         let rand = Math.floor(Math.random() * deck.length);
         let card = deck.splice(rand, 1);
-
-        if (number % 2 === 0) {
-            handOne.push(card);
-        } else {
-            handTwo.push(card);
-        }
+        hand.push(card[0]);
+        console.log("hand", hand);
     }
-    return { handOne: handOne, handTwo: handTwo };
+    if (user === "player") {
+        hand.forEach((card) => (card.Show = true));
+    } else {
+        hand.forEach((card) => (card.Show = false));
+    }
+    return hand;
 };

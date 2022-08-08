@@ -3,14 +3,20 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    height: 95vh;
+    height: 90vh;
     border: 1px #add8e6 solid;
+
+    margin: 0 50px;
+    padding: 20px 0;
+    text-align: center;
+    background-color: #014d43;
+    box-shadow: 0 0 0 5px #282828 inset, 0 0 0 10px #969696 inset,
+        0 0 6px rgba(255, 255, 255, 0.2);
 }
 
 .game-dealer-container {
     border: 1px red dashed;
     height: 100%;
-    width: 40%;
 }
 
 .dealerImg {
@@ -28,20 +34,30 @@
     width: 60%;
 }
 
-.dealer-card-container {
-    padding-top: 2em;
-}
-
 .dealer-bank {
     border: 1px green dashed;
 }
+.dealer-cards-container {
+    border: 2px lightgreen dashed;
 
-.opponent-cards {
-    border: 1px green dashed;
+    display: flex;
+    justify-content: center;
+}
+
+.dealer-hand-container {
+    border: 1px lightcoral dashed;
+
+    display: flex;
+    justify-content: space-around;
+}
+
+.dealer-card {
+    height: 10em;
 }
 
 .bet-container {
     border: 1px green dashed;
+    display: flex;
 }
 
 .player-container {
@@ -49,6 +65,8 @@
 }
 
 .calls-container {
+    display: flex;
+    justify-content: center;
     border: 1px green dashed;
 }
 
@@ -58,32 +76,71 @@
 
 .call-bet {
     border: 1px green dashed;
+    padding: 0.5em;
+    margin-right: 1em;
+    border-radius: 30%;
 }
 
 .fold {
     border: 1px green dashed;
+
+    border-radius: 30%;
+    padding: 0.5em;
 }
 
 .chip-container {
-    border: 1px green dashed;
+    display: flex;
+    justify-content: center;
+
+    border: 1px fuchsia dashed;
 }
 
+.chip-holder {
+    display: flex;
+    justify-content: space-around;
+    width: 50%;
+}
+
+#chip {
+    aspect-ratio: 1/1;
+    height: 4em;
+    border-radius: 50%;
+    border: 7px dashed white;
+    transition: all 1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    /* font-family: "Lato", sans-serif; */
+    font-size: 26px;
+    margin: 0px 8px;
+}
+
+/* black chip*/
 .all-in {
     border: 1px green dashed;
+    background-color: black;
 }
 
+/* purple chip */
 .hundred-dollar {
     border: 1px green dashed;
+    background-color: #301934;
 }
 
+/* red chip */
 .fifty-dollar {
     border: 1px green dashed;
+    background-color: red;
 }
 
+/* green chip */
 .twenty-five-dollar {
     border: 1px green dashed;
+    background-color: green;
 }
 
-.score-container {
+.player-bank {
     border: 1px green dashed;
+    color: black;
 }

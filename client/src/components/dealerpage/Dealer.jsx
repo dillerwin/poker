@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import "./dealers.css";
 
 export default function Dealer(props) {
     const [outfits, setOutfits] = useState();
