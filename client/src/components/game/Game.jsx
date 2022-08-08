@@ -106,7 +106,7 @@ export default function Game({
                     setCurrentImg({ image: current.pictures[0], idx: 0 });
                 });
         }
-    }, []);
+    });
 
     return (
         <div className="game-container">

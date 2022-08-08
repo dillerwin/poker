@@ -129,14 +129,17 @@ export default function Cardtable({ advDealer }) {
         switch (action) {
             case "Call": {
                 console.log("Call case fired");
+                advDealer();
                 return;
             }
             case "Bet": {
                 console.log("Bet case fired");
+                advDealer();
                 return;
             }
             case "Fold": {
                 console.log("Fold case fired");
+                advDealer();
                 return;
             }
             default: {
@@ -147,6 +150,7 @@ export default function Cardtable({ advDealer }) {
 
     return (
         <div className="cardtable-container">
+            {/* DEALER PLAY AREA */}
             <div className="dealer-container">
                 <div className="dealer-bank">
                     Dealer Bank: ${dealerBank.current}
@@ -154,8 +158,10 @@ export default function Cardtable({ advDealer }) {
                 <div className="playing-cards-container">{dealerCards}</div>
             </div>
 
+            {/* BET POOL */}
             <div className="bet-container">Bet: {wager}</div>
 
+            {/* PLAYER PLAY AREA */}
             <div className="player-container">
                 <div className="playing-cards-container">{playerCards}</div>
                 <div className="calls-container">
