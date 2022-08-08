@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-around;
     height: 90vh;
-    border: 1px #add8e6 solid;
+    
 
     margin: 0 50px;
     padding: 20px 0;
@@ -15,7 +15,7 @@
 }
 
 .game-dealer-container {
-    border: 1px red dashed;
+    
     height: 100%;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .cardtable-container {
-    border: 1px yellow dashed;
+    
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -35,54 +35,61 @@
 }
 
 .dealer-bank {
-    border: 1px green dashed;
+    
 }
-.dealer-cards-container {
-    border: 2px lightgreen dashed;
+
+.playing-cards-container {
+    
 
     display: flex;
     justify-content: center;
 }
 
+.card-container {
+    
+    padding: 0;
+    margin-left: 1em;
+}
+
 .dealer-hand-container {
-    border: 1px lightcoral dashed;
+    
 
     display: flex;
     justify-content: space-around;
 }
 
-.dealer-card {
+.playing-card {
     height: 10em;
 }
 
 .bet-container {
-    border: 1px green dashed;
+    
     display: flex;
 }
 
 .player-container {
-    border: 1px green dashed;
+    
 }
 
 .calls-container {
     display: flex;
     justify-content: center;
-    border: 1px green dashed;
+    
 }
 
 .player-cards {
-    border: 1px green dashed;
+    
 }
 
 .call-bet {
-    border: 1px green dashed;
+    
     padding: 0.5em;
     margin-right: 1em;
     border-radius: 30%;
 }
 
 .fold {
-    border: 1px green dashed;
+    
 
     border-radius: 30%;
     padding: 0.5em;
@@ -92,7 +99,7 @@
     display: flex;
     justify-content: center;
 
-    border: 1px fuchsia dashed;
+    
 }
 
 .chip-holder {
@@ -118,29 +125,29 @@
 
 /* black chip*/
 .all-in {
-    border: 1px green dashed;
+    
     background-color: black;
 }
 
 /* purple chip */
 .hundred-dollar {
-    border: 1px green dashed;
+    
     background-color: #301934;
 }
 
 /* red chip */
 .fifty-dollar {
-    border: 1px green dashed;
+    
     background-color: red;
 }
 
 /* green chip */
 .twenty-five-dollar {
-    border: 1px green dashed;
+    
     background-color: green;
 }
 
 .player-bank {
-    border: 1px green dashed;
+    
     color: black;
 }

@@ -41,11 +41,11 @@ export default function Cardtable({ advDealer }) {
 
                     return (
                         <div
-                            className="player-card-container"
+                            className="card-container"
                             key={`${card.Suit}-${card.Value}`}
                         >
                             <img
-                                className={`player-card ${cardName}`}
+                                className="playing-card"
                                 alt={`${card.Value} of ${card.Suit}`}
                                 src={`./cardResource/${cardName}.svg`}
                             ></img>
@@ -55,15 +55,13 @@ export default function Cardtable({ advDealer }) {
             );
             setDealerCards(
                 dealerHand.current.map((card) => {
-                    console.log("card", card);
-
                     return (
                         <div
-                            className="dealer-card-container"
+                            className="card-container"
                             key={`${card.Suit}-${card.Value}`}
                         >
                             <img
-                                className="dealer-card"
+                                className="playing-card"
                                 alt={`dealer card`}
                                 src={`./cardResource/BACK.svg`}
                             ></img>
@@ -80,8 +78,6 @@ export default function Cardtable({ advDealer }) {
     }, []);
 
     function addBet(bet) {
-        console.log("addBet firing");
-        let tempBank = 0;
         setCallOrBet("Bet");
         switch (bet) {
             case "all": {
@@ -91,7 +87,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             case "hundred": {
-                if (playerBank.current - 100 <= playerBank.current) {
+                if (playerBank.current - 100 > 0) {
                     setWager(wager + 100);
                     playerBank.current -= 100;
                 } else {
@@ -102,7 +98,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             case "fifty": {
-                if (playerBank.current - 50 <= playerBank.current) {
+                if (playerBank.current - 50 > 0) {
                     setWager(wager + 50);
                     playerBank.current -= 50;
                 } else {
@@ -113,7 +109,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             case "twenty-five": {
-                if (playerBank.current - 25 <= playerBank.current) {
+                if (playerBank.current - 25 > 0) {
                     setWager(wager + 25);
                     playerBank.current -= 25;
                 } else {
@@ -129,22 +125,52 @@ export default function Cardtable({ advDealer }) {
         }
     }
 
+    function handleClick(action) {
+        switch (action) {
+            case "Call": {
+                console.log("Call case fired");
+                return;
+            }
+            case "Bet": {
+                console.log("Bet case fired");
+                return;
+            }
+            case "Fold": {
+                console.log("Fold case fired");
+                return;
+            }
+            default: {
+                return console.log("We're having issues");
+            }
+        }
+    }
+
     return (
         <div className="cardtable-container">
             <div className="dealer-container">
                 <div className="dealer-bank">
                     Dealer Bank: ${dealerBank.current}
                 </div>
-                <div className="dealer-cards-container">{dealerCards}</div>
+                <div className="playing-cards-container">{dealerCards}</div>
             </div>
 
             <div className="bet-container">Bet: {wager}</div>
 
             <div className="player-container">
-                <div className="player-cards">Player Cards here</div>
+                <div className="playing-cards-container">{playerCards}</div>
                 <div className="calls-container">
-                    <button className="call-bet">{callOrBet}</button>
-                    <button className="fold">Fold</button>
+                    <button
+                        className="call-bet"
+                        onClick={() => handleClick(callOrBet)}
+                    >
+                        {callOrBet}
+                    </button>
+                    <button
+                        className="fold"
+                        onClick={() => handleClick("Fold")}
+                    >
+                        Fold
+                    </button>
                 </div>
                 <div className="chip-container">
                     <div className="chip-holder">
