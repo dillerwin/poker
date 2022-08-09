@@ -6,8 +6,10 @@ export default function Navbar(props) {
     const navigate = useNavigate();
     return (
         <span className="navbar">
-            Hello There, I'm a Navigation Bar
-            <button onClick={() => navigate("/")}>Home</button>
+            <div className="navbar-container">
+                <button className="navbar-home" onClick={() => navigate("/")}>Home</button>
+                <div>Hello There, I'm a Navigation Bar</div>
+            </div>
         </span>
     );
 }

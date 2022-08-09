@@ -1,5 +1,20 @@
 import { useRef } from "react";
 
+//TODO: add scoring for hands. Ties (very slight possibility) should go to the player
+/*
+    hands are scored in this order:
+    Royal Flush
+    Straight Flush
+    4 of a kind
+    Full House
+    Flush
+    Straight
+    3 of a kind
+    2 pair
+    1 pair
+    high card
+*/
+
 export const getDeck = () => {
     console.log("getDeck firing");
     const suits = ["SPADE", "DIAMOND", "CLUB", "HEART"];

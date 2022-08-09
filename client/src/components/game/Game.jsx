@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from "react-router";
 /**
  * TODO:
  *  add "next dealer/prev dealer" functionality
+ *  - add functionality to let you cycle through any "beaten" images in a round
  *  add totally random dealer mode
  *      - maybe fully random and not delete outfits as they're finished, but shuffle them back in?
  *      -  should run on an outfitList instead of the dealerList, I think

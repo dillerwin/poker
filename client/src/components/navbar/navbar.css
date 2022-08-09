@@ -1,0 +1,12 @@
+.navbar {
+    display: flex;
+    justify-content: center;
+}
+.navbar-container {
+    display: flex;
+}
+
+.navbar-home {
+    margin-left: 1em;
+    margin-right: 1em;
+}

@@ -4,24 +4,21 @@ import { getDeck, shuffle, draw } from "./Cards";
 
 export default function Cardtable({ advDealer }) {
     const [winStatus, setWinStatus] = useState();
-    const [wager, setWager] = useState(0);
+    const [pot, setPot] = useState(0);
     const [allIn, setAllIn] = useState(false);
     const [callOrBet, setCallOrBet] = useState("Call");
     const [playerCards, setPlayerCards] = useState([]);
     const [dealerCards, setDealerCards] = useState([]);
 
     let dealerBank = useRef(1000);
+    let dealerRoundBank = useRef(dealerBank.current);
     let playerBank = useRef(1000);
+    let playerRoundBank = useRef(playerBank.current);
     let turn = useRef(0);
     let playerHand = useRef([]);
     let dealerHand = useRef([]);
 
     const deck = useRef({});
-
-    //TODO:
-    // move deck up to Game.jsx
-    // see how giving Game useEffect an empty array affects displays
-    // try to get deck down to (ideally) one call. Will probably be 2 because of how React is
 
     useEffect(() => {
         if (turn.current === 0) {
@@ -55,6 +52,12 @@ export default function Cardtable({ advDealer }) {
             );
             setDealerCards(
                 dealerHand.current.map((card) => {
+                    let cardName = "";
+                    if (!card.Show) {
+                        cardName = "BACK";
+                    } else {
+                        cardName = `${card.Suit}-${card.Value}`;
+                    }
                     return (
                         <div
                             className="card-container"
@@ -63,7 +66,7 @@ export default function Cardtable({ advDealer }) {
                             <img
                                 className="playing-card"
                                 alt={`dealer card`}
-                                src={`./cardResource/BACK.svg`}
+                                src={`./cardResource/${cardName}.svg`}
                             ></img>
                         </div>
                     );
@@ -72,49 +75,54 @@ export default function Cardtable({ advDealer }) {
         }
         if (turn.current === 1) {
             console.log("turn 1");
-            console.log("playerHand", playerHand.current);
-            console.log("dealerHand", dealerHand.current);
         }
     }, []);
 
-    function addBet(bet) {
+    // GOAL:
+    //- this function should reset the player's current bid without removing anything from the pot
+    //- should reset Call/Bet button to Call, if applicable
+    function clearWager() {
+        return null;
+    }
+
+    function addWager(bet) {
         setCallOrBet("Bet");
         switch (bet) {
             case "all": {
-                setWager(wager + playerBank.current);
-                playerBank.current = 0;
+                setPot(pot + playerRoundBank.current);
+                playerRoundBank.current = 0;
                 setAllIn(true);
                 return;
             }
             case "hundred": {
-                if (playerBank.current - 100 > 0) {
-                    setWager(wager + 100);
-                    playerBank.current -= 100;
+                if (playerRoundBank.current - 100 > 0) {
+                    setPot(pot + 100);
+                    playerRoundBank.current -= 100;
                 } else {
-                    setWager(wager + playerBank.current);
-                    playerBank.current = 0;
+                    setPot(pot + playerRoundBank.current);
+                    playerRoundBank.current = 0;
                     setAllIn(true);
                 }
                 return;
             }
             case "fifty": {
-                if (playerBank.current - 50 > 0) {
-                    setWager(wager + 50);
-                    playerBank.current -= 50;
+                if (playerRoundBank.current - 50 > 0) {
+                    setPot(pot + 50);
+                    playerRoundBank.current -= 50;
                 } else {
-                    setWager(wager + playerBank.current);
-                    playerBank.current = 0;
+                    setPot(pot + playerRoundBank.current);
+                    playerRoundBank.current = 0;
                     setAllIn(true);
                 }
                 return;
             }
             case "twenty-five": {
-                if (playerBank.current - 25 > 0) {
-                    setWager(wager + 25);
-                    playerBank.current -= 25;
+                if (playerRoundBank.current - 25 > 0) {
+                    setPot(pot + 25);
+                    playerRoundBank.current -= 25;
                 } else {
-                    setWager(wager + playerBank.current);
-                    playerBank.current = 0;
+                    setPot(pot + playerRoundBank.current);
+                    playerRoundBank.current = 0;
                     setAllIn(true);
                 }
                 return;
@@ -125,21 +133,33 @@ export default function Cardtable({ advDealer }) {
         }
     }
 
+    //TODO: add function to advance gameplay
+    // GOAL:
+    //- this function should end the player's turn, disable the chip's onClick and disable (or hide?) the Bet/Call and Fold buttons
+    //- then have the dealer decide if they're calling or betting if they're betting, should pass back to the player. If not,
+    //- run the hand comparison and see who wins. If the player wins, call advDealer(). If not, start the next round
+
+    function endTurn(fold) {
+        if (fold) {
+            return null;
+        }
+    }
+
     function handleClick(action) {
         switch (action) {
             case "Call": {
                 console.log("Call case fired");
-                advDealer();
+                endTurn();
                 return;
             }
             case "Bet": {
                 console.log("Bet case fired");
-                advDealer();
+                endTurn();
                 return;
             }
             case "Fold": {
                 console.log("Fold case fired");
-                advDealer();
+                endTurn(true);
                 return;
             }
             default: {
@@ -153,24 +173,27 @@ export default function Cardtable({ advDealer }) {
             {/* DEALER PLAY AREA */}
             <div className="dealer-container">
                 <div className="dealer-bank">
-                    Dealer Bank: ${dealerBank.current}
+                    Dealer Bank: ${dealerRoundBank.current}
                 </div>
                 <div className="playing-cards-container">{dealerCards}</div>
             </div>
 
             {/* BET POOL */}
-            <div className="bet-container">Bet: {wager}</div>
+            <div className="bet-container">Bet: {pot}</div>
 
             {/* PLAYER PLAY AREA */}
             <div className="player-container">
                 <div className="playing-cards-container">{playerCards}</div>
                 <div className="calls-container">
+                    {/* CALL/BET BUTTON */}
+                    {/* GOAL: the button will change from CALL to BET when the player's bet is greater than the dealer's */}
                     <button
                         className="call-bet"
                         onClick={() => handleClick(callOrBet)}
                     >
                         {callOrBet}
                     </button>
+                    {/* BET BUTTON */}
                     <button
                         className="fold"
                         onClick={() => handleClick("Fold")}
@@ -178,43 +201,49 @@ export default function Cardtable({ advDealer }) {
                         Fold
                     </button>
                 </div>
+                {/* POKER CHIP CONTAINER */}
                 <div className="chip-container">
                     <div className="chip-holder">
+                        {/* ALLOWS PLAYER TO BET THEIR ENTIRE BANK */}
                         <button
                             className="all-in"
                             id="chip"
                             disabled={allIn}
-                            onClick={() => addBet("all")}
+                            onClick={() => addWager("all")}
                         >
                             All In
                         </button>
+                        {/* BETS $100 */}
                         <button
                             className="hundred-dollar"
                             id="chip"
                             disabled={allIn}
-                            onClick={() => addBet("hundred")}
+                            onClick={() => addWager("hundred")}
                         >
                             $100
                         </button>
+                        {/* BETS $50 */}
                         <button
                             className="fifty-dollar"
                             id="chip"
                             disabled={allIn}
-                            onClick={() => addBet("fifty")}
+                            onClick={() => addWager("fifty")}
                         >
                             $50
                         </button>
+                        {/* BETS $25 */}
                         <button
                             className="twenty-five-dollar"
                             id="chip"
                             disabled={allIn}
-                            onClick={() => addBet("twenty-five")}
+                            onClick={() => addWager("twenty-five")}
                         >
                             $25
                         </button>
                     </div>
                 </div>
-                <div className="player-bank">Bank: ${playerBank.current}</div>
+                {/* PLAYER'S REMAINING MONEY */}
+                <div className="player-bank">Bank: ${playerRoundBank.current}</div>
             </div>
         </div>
     );

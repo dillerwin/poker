@@ -5,7 +5,6 @@
     justify-content: space-around;
     height: 90vh;
     
-
     margin: 0 50px;
     padding: 20px 0;
     text-align: center;
@@ -15,7 +14,7 @@
 }
 
 .game-dealer-container {
-    
+        
     height: 100%;
 }
 
