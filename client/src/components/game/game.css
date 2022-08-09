@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-around;
     height: 90vh;
-    
+
     margin: 0 50px;
     padding: 20px 0;
     text-align: center;
@@ -14,7 +14,6 @@
 }
 
 .game-dealer-container {
-        
     height: 100%;
 }
 
@@ -23,7 +22,6 @@
 }
 
 .cardtable-container {
-    
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -38,21 +36,16 @@
 }
 
 .playing-cards-container {
-    
-
     display: flex;
     justify-content: center;
 }
 
 .card-container {
-    
     padding: 0;
     margin-left: 1em;
 }
 
 .dealer-hand-container {
-    
-
     display: flex;
     justify-content: space-around;
 }
@@ -62,34 +55,40 @@
 }
 
 .bet-container {
-    
     display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.bet-container div {
+    margin: 0.5em;
 }
 
 .player-container {
-    
 }
 
 .calls-container {
     display: flex;
     justify-content: center;
-    
+}
+
+.calls-container button {
+    padding: 0.5em;
+    border-radius: 30%;
+    margin-right: 0.5em;
+    margin-left: 0.5em;
 }
 
 .player-cards {
-    
 }
 
 .call-bet {
-    
     padding: 0.5em;
     margin-right: 1em;
     border-radius: 30%;
 }
 
 .fold {
-    
-
     border-radius: 30%;
     padding: 0.5em;
 }
@@ -97,8 +96,6 @@
 .chip-container {
     display: flex;
     justify-content: center;
-
-    
 }
 
 .chip-holder {
@@ -124,29 +121,24 @@
 
 /* black chip*/
 .all-in {
-    
     background-color: black;
 }
 
 /* purple chip */
 .hundred-dollar {
-    
     background-color: #301934;
 }
 
 /* red chip */
 .fifty-dollar {
-    
     background-color: red;
 }
 
 /* green chip */
 .twenty-five-dollar {
-    
     background-color: green;
 }
 
 .player-bank {
-    
     color: black;
 }
