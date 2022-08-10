@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { getDeck, shuffle, draw, discard, evaluateHands } from "./Cards";
 
 export default function Cardtable({ advDealer }) {
-    const [winStatus, setWinStatus] = useState();
+    // const [winStatus, setWinStatus] = useState();
     const [pot, setPot] = useState(0);
     // const [dealerWager, setDealerWager] = useState(0);
     const [playerWager, setPlayerWager] = useState(0);
@@ -34,6 +34,7 @@ export default function Cardtable({ advDealer }) {
 
     const deck = useRef({});
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         console.log("current phase", phase.current);
         if (phase.current === "begin") {
@@ -164,9 +165,18 @@ export default function Cardtable({ advDealer }) {
                 console.log("starting discard phase");
 
                 setTimeout(() => {
+                    //TODO: this is currently allowing dealer to go negative when I don't want it to
                     console.log("playerWager", playerWager);
-                    dealerWager.current = playerWager;
-                    dealerBank.current -= dealerWager.current;
+                    if (dealerBank - playerWager < 0) {
+                        let temp = playerWager - dealerBank;
+                        playerBank += temp;
+                        setPlayerWager(playerWager - temp);
+                        dealerWager.current = dealerBank.current;
+                        dealerBank.current = 0;
+                    } else {
+                        dealerWager.current = playerWager;
+                        dealerBank.current -= playerWager;
+                    }
                     phase.current = "discard";
                     drawBtnDisplay.current = "flex";
                     setPot(pot + playerWager + dealerWager.current);
@@ -244,8 +254,16 @@ export default function Cardtable({ advDealer }) {
             case "bet2": {
                 console.log("starting end phase");
                 setTimeout(() => {
-                    dealerBank.current -= playerWager;
-                    dealerWager.current = playerWager;
+                    if (dealerBank - playerWager < 0) {
+                        let temp = playerWager - dealerBank;
+                        playerBank += temp;
+                        setPlayerWager(playerWager - temp);
+                        dealerWager.current = dealerBank.current;
+                        dealerBank.current = 0;
+                    } else {
+                        dealerWager.current = playerWager;
+                        dealerBank.current -= playerWager;
+                    }
                     setPot(pot + playerWager + dealerWager.current);
                     setPlayerWager(0);
                     setCallOrBet("Call");
@@ -279,21 +297,20 @@ export default function Cardtable({ advDealer }) {
                     setPot(0);
                     if (dealerBank.current <= 0) {
                         dealerBank.current = 1000;
-                        dealerBank.current = 1000;
                     }
                     setDisableChips(true);
                     setDisableBtns(true);
                     setCallOrBet("Call");
                     phase.current = "begin";
+                    //GOAL: advDealer() should only be called if dealer is at $0
+                    //- dealers should also be able to go negative, I think.
+                    //- negative score would come out of the pot next round
                     advDealer();
                 }
                 console.log("after evaluate");
-                setWinStatus(true);
-                endPhase();
                 return null;
             }
             case "begin": {
-                shuffle(deck.current);
                 return;
             }
             default: {
@@ -316,7 +333,6 @@ export default function Cardtable({ advDealer }) {
             case "Bet": {
                 setPot(pot + playerWager * 2);
                 setPlayerWager(0);
-                playerBank.current = playerBank.current;
                 endPhase();
                 return;
             }
@@ -324,9 +340,7 @@ export default function Cardtable({ advDealer }) {
                 if (!!playerWager) {
                     playerBank.current += playerWager;
                 }
-                playerBank.current = playerBank.current;
                 dealerBank.current += pot;
-                dealerBank.current = dealerBank.current;
                 phase.current = "end";
                 setPot(0);
                 setPlayerWager(0);
@@ -335,7 +349,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             case "Clear": {
-                playerBank.current = playerBank.current;
+                playerBank.current += playerWager;
                 setPlayerWager(0);
                 setDisableChips(false);
                 setCallOrBet("Call");
