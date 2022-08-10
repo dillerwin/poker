@@ -8,7 +8,8 @@ export default function GameDealer({ currentImg }) {
                 className="dealerImg"
                 alt="dealer"
                 // TODO: change this back to { currentImg }
-                src="https://www.fillmurray.com/80/120"
+                src={currentImg.image}
+                // src="https://www.fillmurray.com/80/120"
             />
         </div>
     );

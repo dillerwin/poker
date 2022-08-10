@@ -70,7 +70,6 @@ export default function Game({
     }
 
     useEffect(() => {
-        console.log("Game useEffect firing");
         if (refreshDealerArray.current) {
             if (!dealerName.current) {
                 dealerName.current = "Candy";

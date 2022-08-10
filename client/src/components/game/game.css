@@ -54,6 +54,12 @@
     height: 10em;
 }
 
+.center-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
 .bet-container {
     display: flex;
     flex-direction: column;
@@ -62,6 +68,16 @@
 
 .bet-container div {
     margin: 0.5em;
+}
+
+.draw-button-container {
+    display: flex;
+    margin-left: 32%;
+    align-items: center;
+}
+
+.draw-button {
+    padding: 0.6em;
 }
 
 .player-container {
