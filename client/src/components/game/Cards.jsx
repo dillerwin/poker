@@ -1,20 +1,5 @@
 import { useRef } from "react";
 
-//TODO: add scoring for hands. Ties (very slight possibility) should go to the player
-/*
-    hands are scored in this order:
-    Royal Flush - 250
-    Straight Flush - 200
-    4 of a kind - 150
-    Full House - 100
-    Flush - 90 
-    Straight - 80
-    3 of a kind - 70
-    2 pair - 50
-    1 pair - 25
-    high card - 10
-*/
-
 export const getDeck = () => {
     console.log("getDeck firing");
     const suits = ["SPADE", "DIAMOND", "CLUB", "HEART"];
@@ -41,7 +26,7 @@ export const getDeck = () => {
                 Suit: suits[i],
                 Value: values[x],
                 Show: null,
-                Hold: false,
+                Selected: false,
             };
             deck.push(card);
         }
@@ -61,10 +46,8 @@ export const shuffle = (deck) => {
     return deck;
 };
 
-/**
- * @param deck
- * @param number
- */
+//FIXME: is allowing discarded cards back into hands
+
 export const draw = (deck, number, user, hand) => {
     //initial draw at the top of the round
     if (!hand) {
@@ -100,7 +83,8 @@ export const draw = (deck, number, user, hand) => {
 export const discard = (deck, user, hand) => {
     let count = 0;
     hand.forEach((card, idx) => {
-        if (!hand.Hold) {
+        //FIXME: not discarding all Selected cards
+        if (card.Selected) {
             hand.splice(idx, 1);
             count++;
         }
@@ -119,12 +103,27 @@ export const discard = (deck, user, hand) => {
 //  - will also be called for dealer to determine which cards to discard/hold during draw phase
 // for now, is just returning true, the house never wins lol
 
+//TODO: add scoring for hands. Ties (very slight possibility) should go to the player
+/*
+    hands are scored in this order:
+    Royal Flush - 250
+    Straight Flush - 200
+    4 of a kind - 150
+    Full House - 100
+    Flush - 90 
+    Straight - 80
+    3 of a kind - 70
+    2 pair - 50
+    1 pair - 25
+    high card - 10
+*/
+
 export const evaluateHands = (playerHand, dealerHand, phase) => {
-    // console.group("evaluating hands");
-    // console.log("playerHand", playerHand);
-    // console.log("dealerHand", dealerHand);
-    // console.log("phase", phase);
-    // console.groupEnd();
+    console.group("evaluating hands");
+    console.log("playerHand", playerHand);
+    console.log("dealerHand", dealerHand);
+    console.log("phase", phase);
+    console.groupEnd();
 
     return true;
 };

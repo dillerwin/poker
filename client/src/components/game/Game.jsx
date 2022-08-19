@@ -72,10 +72,12 @@ export default function Game({
     useEffect(() => {
         if (refreshDealerArray.current) {
             if (!dealerName.current) {
-                dealerName.current = "Candy";
-                // if (dealerList.current.length === 0) {
-                //     navigate("/");
-                // }
+                getNewDealer(
+                    dealerList,
+                    dealerName,
+                    outfitId,
+                    refreshDealerArray
+                );
             }
             refreshDealerArray.current = false;
             picRefArray.current = [];

@@ -8,7 +8,8 @@ export default function Navbar(props) {
         <span className="navbar">
             <div className="navbar-container">
                 <button className="navbar-home" onClick={() => navigate("/")}>Home</button>
-                <div>Hello There, I'm a Navigation Bar</div>
+                <button className="navbar-dealers" onClick={()=>navigate("/dealers")}>Dealers</button>
+                <button className="navbar-start" onClick={()=>navigate("/play")}>Random Dealer</button>
             </div>
         </span>
     );

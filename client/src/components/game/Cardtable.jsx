@@ -10,6 +10,7 @@ export default function Cardtable({ advDealer }) {
     const [disableBtns, setDisableBtns] = useState(false);
     const [disableChips, setDisableChips] = useState(false);
     const [callOrBet, setCallOrBet] = useState("Call");
+    const [cardSelect, toggleCardSelect] = useState(false);
 
     //playerCards/dealerCards are the visible cards on the table
     const [playerCards, setPlayerCards] = useState([]);
@@ -34,11 +35,60 @@ export default function Cardtable({ advDealer }) {
 
     const deck = useRef({});
 
+    function buildPlayerHand() {
+        setPlayerCards(
+            playerHand.current.map((card) => {
+                let cardName = `${card.Suit}-${card.Value}`;
+
+                return (
+                    <div className="card-container" key={`${cardName}`}>
+                        <img
+                            className="playing-card"
+                            style={
+                                card.Selected
+                                    ? { boxShadow: "0 0 0 3px red" }
+                                    : {}
+                            }
+                            alt={`${card.Value} of ${card.Suit}`}
+                            src={`./cardResource/${cardName}.svg`}
+                            onClick={() =>
+                                handleCardClick([card.Suit, card.Value])
+                            }
+                        ></img>
+                    </div>
+                );
+            })
+        );
+    }
+    function buildDealerHand() {
+        setDealerCards(
+            dealerHand.current.map((card) => {
+                let cardName = "";
+                if (!card.Show) {
+                    cardName = "BACK";
+                } else {
+                    cardName = `${card.Suit}-${card.Value}`;
+                }
+                return (
+                    <div
+                        className="card-container"
+                        key={`${card.Suit}-${card.Value}`}
+                    >
+                        <img
+                            className="playing-card"
+                            alt={`dealer card`}
+                            src={`./cardResource/${cardName}.svg`}
+                        ></img>
+                    </div>
+                );
+            })
+        );
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        console.log("current phase", phase.current);
+        console.warn("current phase", phase.current);
         if (phase.current === "begin") {
-            console.log("begin phase");
             setDisableChips(true);
             setDisableBtns(true);
             deck.current = getDeck();
@@ -48,46 +98,9 @@ export default function Cardtable({ advDealer }) {
             dealerHand.current = draw(deck.current, 5, "dealer");
 
             //TODO: playCards and dealerCards need an onClick for discard phase
-            setPlayerCards(
-                playerHand.current.map((card) => {
-                    let cardName = `${card.Suit}-${card.Value}`;
 
-                    return (
-                        <div
-                            className="card-container"
-                            key={`${card.Suit}-${card.Value}`}
-                        >
-                            <img
-                                className="playing-card"
-                                alt={`${card.Value} of ${card.Suit}`}
-                                src={`./cardResource/${cardName}.svg`}
-                            ></img>
-                        </div>
-                    );
-                })
-            );
-            setDealerCards(
-                dealerHand.current.map((card) => {
-                    let cardName = "";
-                    if (!card.Show) {
-                        cardName = "BACK";
-                    } else {
-                        cardName = `${card.Suit}-${card.Value}`;
-                    }
-                    return (
-                        <div
-                            className="card-container"
-                            key={`${card.Suit}-${card.Value}`}
-                        >
-                            <img
-                                className="playing-card"
-                                alt={`dealer card`}
-                                src={`./cardResource/${cardName}.svg`}
-                            ></img>
-                        </div>
-                    );
-                })
-            );
+            buildPlayerHand();
+            buildDealerHand();
             phase.current = "ante";
         } else if (phase.current === "ante") {
             setTimeout(() => {
@@ -146,7 +159,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             default: {
-                return console.log("Danger Will Robinson");
+                return console.error("Danger Will Robinson");
             }
         }
     }
@@ -158,15 +171,25 @@ export default function Cardtable({ advDealer }) {
     //- run the hand comparison and see who wins. If the player wins, call advDealer(). If not, start the next round
 
     function endPhase(fold) {
-        console.log("at endPhase, phase:", phase.current);
+        console.warn("at endPhase, phase:", phase.current);
 
         switch (phase.current) {
-            case "bet": {
-                console.log("starting discard phase");
+            case "eval": {
+                let evaluate = evaluateHands(
+                    playerHand.current,
+                    dealerHand.current,
+                    phase.current
+                );
 
+                if (evaluate) {
+                    console.log("evaluate", evaluate);
+                }
+                return null;
+            }
+            case "bet": {
                 setTimeout(() => {
-                    //TODO: this is currently allowing dealer to go negative when I don't want it to
-                    console.log("playerWager", playerWager);
+                    //TODO: this is currently allowing dealer to go negative
+                    // console.log("playerWager", playerWager);
                     if (dealerBank - playerWager < 0) {
                         let temp = playerWager - dealerBank;
                         playerBank += temp;
@@ -190,58 +213,19 @@ export default function Cardtable({ advDealer }) {
                 return null;
             }
             case "discard": {
-                console.log("starting draw phase");
                 drawBtnDisplay.current = "none";
                 phase.current = "draw";
                 endPhase();
                 return null;
             }
             case "draw": {
-                console.log("starting bet2 phase");
+                //FIXME: I'm sure this is part of the draw issues
                 discard(deck.current, "player", playerHand.current);
                 discard(deck.current, "dealer", dealerHand.current);
                 phase.current = "bet2";
                 setTimeout(() => {
-                    setPlayerCards(
-                        playerHand.current.map((card) => {
-                            let cardName = `${card.Suit}-${card.Value}`;
-
-                            return (
-                                <div
-                                    className="card-container"
-                                    key={`${card.Suit}-${card.Value}`}
-                                >
-                                    <img
-                                        className="playing-card"
-                                        alt={`${card.Value} of ${card.Suit}`}
-                                        src={`./cardResource/${cardName}.svg`}
-                                    ></img>
-                                </div>
-                            );
-                        })
-                    );
-                    setDealerCards(
-                        dealerHand.current.map((card) => {
-                            let cardName = "";
-                            if (!card.Show) {
-                                cardName = "BACK";
-                            } else {
-                                cardName = `${card.Suit}-${card.Value}`;
-                            }
-                            return (
-                                <div
-                                    className="card-container"
-                                    key={`${card.Suit}-${card.Value}`}
-                                >
-                                    <img
-                                        className="playing-card"
-                                        alt={`dealer card`}
-                                        src={`./cardResource/${cardName}.svg`}
-                                    ></img>
-                                </div>
-                            );
-                        })
-                    );
+                    buildPlayerHand();
+                    buildDealerHand();
                     setCallOrBet("Call");
                     playerBank.current !== 0
                         ? setDisableChips(false)
@@ -252,7 +236,6 @@ export default function Cardtable({ advDealer }) {
                 return null;
             }
             case "bet2": {
-                console.log("starting end phase");
                 setTimeout(() => {
                     if (dealerBank - playerWager < 0) {
                         let temp = playerWager - dealerBank;
@@ -292,7 +275,6 @@ export default function Cardtable({ advDealer }) {
                 );
                 console.log("evaluate", evaluate);
                 if (evaluate) {
-                    console.log("in evaluate");
                     playerBank.current += pot;
                     setPot(0);
                     if (dealerBank.current <= 0) {
@@ -307,7 +289,6 @@ export default function Cardtable({ advDealer }) {
                     //- negative score would come out of the pot next round
                     advDealer();
                 }
-                console.log("after evaluate");
                 return null;
             }
             case "begin": {
@@ -361,6 +342,20 @@ export default function Cardtable({ advDealer }) {
         }
     }
 
+    function handleCardClick([suit, value]) {
+        if (phase.current === "discard") {
+            playerHand.current.forEach((card) => {
+                if (card.Suit === suit && card.Value === value) {
+                    card.Selected = true;
+                }
+            });
+
+            buildPlayerHand();
+
+            toggleCardSelect(!cardSelect);
+        }
+    }
+
     return (
         <div className="cardtable-container">
             {/* DEALER PLAY AREA */}
@@ -401,7 +396,14 @@ export default function Cardtable({ advDealer }) {
             <div className="player-container">
                 <div className="playing-cards-container">{playerCards}</div>
                 {/* CALL/FOLD/CLEAR BUTTONS */}
-                <div className="calls-container">
+                <div
+                    className="calls-container"
+                    style={
+                        {
+                            // display: drawBtnDisplay === "none" ? "flex" : "none",
+                        }
+                    }
+                >
                     {/* CALL/BET BUTTON */}
                     {/* GOAL: the button will change from CALL to BET when the player's bet is greater than the dealer's */}
                     <button
@@ -429,7 +431,12 @@ export default function Cardtable({ advDealer }) {
                 </div>
 
                 {/* POKER CHIP CONTAINER */}
-                <div className="chip-container">
+                <div
+                    className="chip-container"
+                    style={{
+                        display: drawBtnDisplay === "none" ? "none" : "flex",
+                    }}
+                >
                     <div className="chip-holder">
                         {/* ALLOWS PLAYER TO BET THEIR ENTIRE BANK */}
                         <button
@@ -468,6 +475,16 @@ export default function Cardtable({ advDealer }) {
                             $25
                         </button>
                     </div>
+                    <div
+                        className="chip-spacer"
+                        style={{
+                            display:
+                                drawBtnDisplay.current === "none"
+                                    ? "none"
+                                    : "block",
+                            height: "3em",
+                        }}
+                    ></div>
                 </div>
                 {/* PLAYER'S REMAINING MONEY */}
                 <div className="player-bank">Bank: ${playerBank.current}</div>

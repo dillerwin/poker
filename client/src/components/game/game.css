@@ -8,8 +8,8 @@
     margin: 0 50px;
     padding: 20px 0;
     text-align: center;
-    background-color: #014d43;
-    box-shadow: 0 0 0 5px #282828 inset, 0 0 0 10px #969696 inset,
+    background-color: var(--mountain-top-blue);
+    box-shadow: 0 0 0 5px var(--grey-sky) inset, 0 0 0 10px #969696 inset,
         0 0 6px rgba(255, 255, 255, 0.2);
 }
 
@@ -43,6 +43,7 @@
 .card-container {
     padding: 0;
     margin-left: 1em;
+    width: fit-content;
 }
 
 .dealer-hand-container {
@@ -52,6 +53,7 @@
 
 .playing-card {
     height: 10em;
+    border-radius: 5%;
 }
 
 .center-container {
@@ -137,24 +139,24 @@
     margin: 0px 8px;
 }
 
-/* black chip*/
+/*all in chip*/
 .all-in {
-    background-color: black;
+    background-color: var(--night-blue);
 }
 
-/* purple chip */
+/*100$ chip*/
 .hundred-dollar {
-    background-color: #301934;
+    background-color: var(--dark-brown);
 }
 
-/* red chip */
+/* 50$ chip */
 .fifty-dollar {
-    background-color: red;
+    background-color: var(--grey-sky);
 }
 
-/* green chip */
+/* $25 chip */
 .twenty-five-dollar {
-    background-color: green;
+    background-color: var(--light-brown);
 }
 
 .player-bank {

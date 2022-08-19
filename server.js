@@ -1,5 +1,3 @@
-/** @format */
-
 require("dotenv").config();
 
 const express = require("express");
@@ -109,7 +107,6 @@ app.get("/api/dealerShowcase", async (req, res) => {
     res.send(dealerShowcase);
 });
 
-//one
 app.get("/api/dealer/:dealerName", async (req, res) => {
     console.log("get one dealer");
     let dealer = await Dealer.findOne({ name: req.params.dealerName });
