@@ -87,7 +87,7 @@ export default function Cardtable({ advDealer }) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        console.warn("current phase", phase.current);
+        console.warn(`current phase '${phase.current}'`);
         if (phase.current === "begin") {
             setDisableChips(true);
             setDisableBtns(true);
@@ -176,8 +176,8 @@ export default function Cardtable({ advDealer }) {
         switch (phase.current) {
             case "eval": {
                 let evaluate = evaluateHands(
-                    playerHand.current,
                     dealerHand.current,
+                    playerHand.current,
                     phase.current
                 );
 
@@ -200,7 +200,7 @@ export default function Cardtable({ advDealer }) {
                         dealerWager.current = playerWager;
                         dealerBank.current -= playerWager;
                     }
-                    phase.current = "discard";
+                    phase.current = "eval";
                     drawBtnDisplay.current = "flex";
                     setPot(pot + playerWager + dealerWager.current);
                     setPlayerWager(0);
@@ -269,8 +269,8 @@ export default function Cardtable({ advDealer }) {
                     return null;
                 }
                 let evaluate = evaluateHands(
-                    playerHand.current,
                     dealerHand.current,
+                    playerHand.current,
                     phase.current
                 );
                 console.log("evaluate", evaluate);
@@ -381,7 +381,7 @@ export default function Cardtable({ advDealer }) {
                 </div>
                 <div
                     className="draw-button-container"
-                    style={{ display: drawBtnDisplay.current }}
+                    // style={{ display: drawBtnDisplay.current }}
                 >
                     <button
                         className="draw-button"

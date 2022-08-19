@@ -19,7 +19,6 @@ export default function Dealer(props) {
         fetch("/api/dealerList")
             .then((res) => res.json())
             .then((dealers) => {
-                console.log("dealerList firing");
                 props.dealerList.current = dealers;
             });
     }, []);
