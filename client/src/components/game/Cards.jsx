@@ -1,7 +1,6 @@
 import { useRef } from "react";
 
 export const getDeck = () => {
-    console.log("getDeck firing");
     const suits = ["SPADE", "DIAMOND", "CLUB", "HEART"];
     const values = [
         "A",
@@ -127,28 +126,16 @@ export const evaluateHands = (dealerHand, playerHand, phase) => {
     if (playerHand) {
         playerScore = checkHand(playerHand);
 
-        console.log("playerScore", playerScore);
-        console.log("dealerScore", dealerScore);
-
         if (
             //if both players have only a high card
             typeof dealerScore !== "number" &&
             typeof playerScore !== "number"
         ) {
-            console.log("all high cards");
             //if somehow they have the *same* high card
             //tie here goes to the player
             if (dealerScore[0] === playerScore[0]) {
-                console.log(
-                    "high card equal, next high result:",
-                    dealerScore[1] < playerScore[1]
-                );
                 return dealerScore[1] < playerScore[1];
             } else {
-                console.log(
-                    "high cards not equal, result:",
-                    dealerScore[0] < playerScore[0]
-                );
                 return dealerScore[0] < playerScore[0];
             }
         } else {
@@ -166,7 +153,6 @@ export const evaluateHands = (dealerHand, playerHand, phase) => {
                 return true;
             } else {
                 //if both have score
-                console.log("score comparison", dealerScore < playerScore);
                 return dealerScore < playerScore;
             }
         }
@@ -210,9 +196,7 @@ const checkHand = (hand) => {
     suits.fill(0);
 
     hand.forEach((card) => {
-        console.log("card", card);
         if (isNaN(card.Value)) {
-            console.log("isNan");
             if (card.Value === "J") {
                 values[11]++;
             } else if (card.Value === "Q") {
@@ -324,17 +308,12 @@ const checkHand = (hand) => {
     }
 
     if (typeof score === "number") {
-        console.log("score before loop", score);
         for (let i = 0; i < suits.length; i++) {
-            console.log("suits[i]", suits[i]);
             if (suits[i]) {
                 score += (i + 1) * 2;
             }
         }
-        console.log("score after loop", score);
     }
-
-    console.log("score", score);
 
     return score;
 };
