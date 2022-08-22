@@ -34,6 +34,14 @@ export default function Game({
     let imgInfo = useRef({ image: "", idx: 0 });
     let outfits = useRef([]);
 
+    function resetDealer() {
+        imgInfo = {
+            image: picRefArray.current[0],
+            idx: 0,
+        };
+        setCurrentImg(imgInfo);
+    }
+
     function advDealer() {
         if (currentImg.idx + 1 <= picRefArray.current.length - 1) {
             imgInfo = {

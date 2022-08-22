@@ -5,12 +5,12 @@ import { getDeck, shuffle, draw, discard, evaluateHands } from "./Cards";
 export default function Cardtable({ advDealer }) {
     // const [winStatus, setWinStatus] = useState();
     const [pot, setPot] = useState(0);
-    // const [dealerWager, setDealerWager] = useState(0);
-    const [playerWager, setPlayerWager] = useState(0);
+    const [lastBet, setLastBet] = useState("");
     const [disableBtns, setDisableBtns] = useState(false);
     const [disableChips, setDisableChips] = useState(false);
     const [callOrBet, setCallOrBet] = useState("Call");
     const [cardSelect, toggleCardSelect] = useState(false);
+    const [resultBubble, setResultBubble] = useState("");
 
     //playerCards/dealerCards are the visible cards on the table
     const [playerCards, setPlayerCards] = useState([]);
@@ -18,6 +18,7 @@ export default function Cardtable({ advDealer }) {
 
     let dealerBank = useRef(1000);
     let playerBank = useRef(1000);
+    let playerWager = useRef(0);
     let dealerWager = useRef(0);
     let phase = useRef("begin");
     // "begin" - new round
@@ -94,22 +95,22 @@ export default function Cardtable({ advDealer }) {
             deck.current = getDeck();
 
             shuffle(deck.current);
+
             playerHand.current = draw(deck.current, 5, "player");
             dealerHand.current = draw(deck.current, 5, "dealer");
-
-            //TODO: playCards and dealerCards need an onClick for discard phase
-
             buildPlayerHand();
             buildDealerHand();
+
             phase.current = "ante";
         } else if (phase.current === "ante") {
             setTimeout(() => {
                 playerBank.current -= 25;
                 dealerBank.current -= 25;
                 setPot(50);
-                playerBank.current !== 0
+                playerBank.current !== 0 || dealerBank.current !== 0
                     ? setDisableChips(false)
                     : setDisableChips(true);
+
                 setDisableBtns(false);
             }, 1000);
             phase.current = "bet";
@@ -120,42 +121,48 @@ export default function Cardtable({ advDealer }) {
         setCallOrBet("Bet");
         switch (bet) {
             case "all": {
-                setPlayerWager(playerWager + playerBank.current);
+                playerWager.current = playerWager.current + playerBank.current;
                 playerBank.current = 0;
                 setDisableChips(true);
+                setLastBet("all");
                 return;
             }
             case "hundred": {
                 if (playerBank.current - 100 > 0) {
-                    setPlayerWager(playerWager + 100);
+                    playerWager.current = playerWager.current + 100;
                     playerBank.current -= 100;
                 } else {
-                    setPlayerWager(playerWager + playerBank.current);
+                    playerWager.current = playerWager + playerBank.current;
                     playerBank.current = 0;
                     setDisableChips(true);
                 }
+                setLastBet("hundred");
                 return;
             }
             case "fifty": {
                 if (playerBank.current - 50 > 0) {
-                    setPlayerWager(playerWager + 50);
+                    playerWager.current = playerWager.current + 50;
                     playerBank.current -= 50;
                 } else {
-                    setPlayerWager(playerWager + playerBank.current);
+                    playerWager.current =
+                        playerWager.current + playerBank.current;
                     playerBank.current = 0;
                     setDisableChips(true);
                 }
+                setLastBet("fifty");
                 return;
             }
             case "twenty-five": {
                 if (playerBank.current - 25 > 0) {
-                    setPlayerWager(playerWager + 25);
+                    playerWager.current = playerWager.current + 25;
                     playerBank.current -= 25;
                 } else {
-                    setPlayerWager(playerWager + playerBank.current);
+                    playerWager.current =
+                        playerWager.current + playerBank.current;
                     playerBank.current = 0;
                     setDisableChips(true);
                 }
+                setLastBet("twenty-five");
                 return;
             }
             default: {
@@ -164,46 +171,29 @@ export default function Cardtable({ advDealer }) {
         }
     }
 
-    //TODO: add function to advance gameplay
-    // GOAL:
-    //- this function should end the player's turn, disable the chip's onClick and disable (or hide?) the Bet/Call and Fold buttons
-    //- then have the dealer decide if they're calling or betting if they're betting, should pass back to the player. If not,
-    //- run the hand comparison and see who wins. If the player wins, call advDealer(). If not, start the next round
-
     function endPhase(fold) {
         console.warn("at endPhase, phase:", phase.current);
 
         switch (phase.current) {
             case "eval": {
-                let evaluate = evaluateHands(
-                    dealerHand.current,
-                    playerHand.current,
-                    phase.current
-                );
-
-                if (evaluate) {
-                    console.log("evaluate", evaluate);
-                }
                 return null;
             }
             case "bet": {
                 setTimeout(() => {
-                    //TODO: this is currently allowing dealer to go negative
-                    // console.log("playerWager", playerWager);
-                    if (dealerBank - playerWager < 0) {
-                        let temp = playerWager - dealerBank;
-                        playerBank += temp;
-                        setPlayerWager(playerWager - temp);
+                    if (dealerBank.current - playerWager.current < 0) {
+                        let betGap = playerWager.current - dealerBank.current;
+                        playerBank.current += betGap;
+                        playerWager.current = dealerBank.current;
                         dealerWager.current = dealerBank.current;
                         dealerBank.current = 0;
                     } else {
-                        dealerWager.current = playerWager;
-                        dealerBank.current -= playerWager;
+                        dealerWager.current = playerWager.current;
+                        dealerBank.current -= dealerWager.current;
                     }
-                    phase.current = "eval";
+                    phase.current = "discard";
                     drawBtnDisplay.current = "flex";
-                    setPot(pot + playerWager + dealerWager.current);
-                    setPlayerWager(0);
+                    setPot(pot + playerWager.current + dealerWager.current);
+                    playerWager.current = 0;
                     dealerWager.current = 0;
                     setCallOrBet("Call");
                     setDisableChips(true);
@@ -213,21 +203,41 @@ export default function Cardtable({ advDealer }) {
                 return null;
             }
             case "discard": {
+                //TODO: this should not take a playerHand, just dealerHand
+                // should then evaluate dealer's hand and decide what card to keep/discard
+                let evaluate = evaluateHands(
+                    dealerHand.current,
+                    playerHand.current,
+                    phase.current
+                );
+
+                if (evaluate) {
+                    console.log("evaluate", evaluate);
+                }
+
+                phase.current = "discard";
                 drawBtnDisplay.current = "none";
                 phase.current = "draw";
                 endPhase();
                 return null;
             }
             case "draw": {
-                //FIXME: I'm sure this is part of the draw issues
-                discard(deck.current, "player", playerHand.current);
-                discard(deck.current, "dealer", dealerHand.current);
+                playerHand.current = discard(
+                    deck.current,
+                    "player",
+                    playerHand.current
+                );
+                dealerHand.current = discard(
+                    deck.current,
+                    "dealer",
+                    dealerHand.current
+                );
                 phase.current = "bet2";
                 setTimeout(() => {
                     buildPlayerHand();
                     buildDealerHand();
                     setCallOrBet("Call");
-                    playerBank.current !== 0
+                    playerBank.current !== 0 && dealerBank.current !== 0
                         ? setDisableChips(false)
                         : setDisableChips(true);
                     setDisableBtns(false);
@@ -237,18 +247,18 @@ export default function Cardtable({ advDealer }) {
             }
             case "bet2": {
                 setTimeout(() => {
-                    if (dealerBank - playerWager < 0) {
-                        let temp = playerWager - dealerBank;
+                    if (dealerBank - playerWager.current < 0) {
+                        let temp = playerWager.current - dealerBank;
                         playerBank += temp;
-                        setPlayerWager(playerWager - temp);
+                        playerWager.current = playerWager.current - temp;
                         dealerWager.current = dealerBank.current;
                         dealerBank.current = 0;
                     } else {
-                        dealerWager.current = playerWager;
-                        dealerBank.current -= playerWager;
+                        dealerWager.current = playerWager.current;
+                        dealerBank.current -= playerWager.current;
                     }
-                    setPot(pot + playerWager + dealerWager.current);
-                    setPlayerWager(0);
+                    setPot(pot + playerWager.current + dealerWager.current);
+                    playerWager.current = 0;
                     setCallOrBet("Call");
                     phase.current = "end";
                     setDisableBtns(true);
@@ -262,32 +272,50 @@ export default function Cardtable({ advDealer }) {
                 //  - set both banks to 1000, and restart the game
                 //  - if the "scroll previous" is implemented, this will need to clear that choice as well
                 console.log("ending round");
+                let evaluate = undefined;
                 if (fold) {
-                    // end round
-                    phase.current = "begin";
-                    setCallOrBet("Call");
-                    return null;
+                    evaluate = false;
+                } else {
+                    evaluate = evaluateHands(
+                        dealerHand.current,
+                        playerHand.current,
+                        phase.current
+                    );
                 }
-                let evaluate = evaluateHands(
-                    dealerHand.current,
-                    playerHand.current,
-                    phase.current
-                );
+
+                dealerHand.current.forEach((card) => (card.Show = true));
+                buildDealerHand();
+
                 console.log("evaluate", evaluate);
                 if (evaluate) {
                     playerBank.current += pot;
                     setPot(0);
                     if (dealerBank.current <= 0) {
+                        advDealer();
                         dealerBank.current = 1000;
                     }
+                    buildResultBubble("You win!");
                     setDisableChips(true);
                     setDisableBtns(true);
+                    if (dealerBank.current <= 0) {
+                        advDealer();
+                        dealerBank.current = 1000;
+                    }
                     setCallOrBet("Call");
-                    phase.current = "begin";
-                    //GOAL: advDealer() should only be called if dealer is at $0
-                    //- dealers should also be able to go negative, I think.
-                    //- negative score would come out of the pot next round
-                    advDealer();
+                } else {
+                    dealerBank.current += pot;
+                    setPot(0);
+                    fold
+                        ? buildResultBubble("You folded")
+                        : buildResultBubble("You lost");
+                    setDisableBtns(true);
+                    setDisableChips(true);
+                    setCallOrBet("Call");
+                    if (playerBank.current === 0) {
+                        //TODO: insert "hard loss" logic here
+                        //for now:
+                        playerBank.current = 1000;
+                    }
                 }
                 return null;
             }
@@ -303,41 +331,28 @@ export default function Cardtable({ advDealer }) {
 
     function handleClick(action) {
         switch (action) {
-            case "Draw": {
-                endPhase();
-                return null;
-            }
-            case "Call": {
-                endPhase();
-                return;
-            }
-            case "Bet": {
-                setPot(pot + playerWager * 2);
-                setPlayerWager(0);
-                endPhase();
-                return;
-            }
             case "Fold": {
-                if (!!playerWager) {
-                    playerBank.current += playerWager;
+                if (playerWager.current !== 0) {
+                    playerBank.current += playerWager.current;
                 }
-                dealerBank.current += pot;
+                playerWager.current = 0;
                 phase.current = "end";
-                setPot(0);
-                setPlayerWager(0);
                 endPhase(true);
-                setDisableChips(false);
                 return;
             }
             case "Clear": {
-                playerBank.current += playerWager;
-                setPlayerWager(0);
+                playerWager.current = 0;
                 setDisableChips(false);
                 setCallOrBet("Call");
                 return;
             }
+            case "New": {
+                phase.current = "begin";
+                setResultBubble(null);
+                return;
+            }
             default: {
-                return console.warn("We're having handleClick issues, somehow");
+                endPhase();
             }
         }
     }
@@ -346,13 +361,39 @@ export default function Cardtable({ advDealer }) {
         if (phase.current === "discard") {
             playerHand.current.forEach((card) => {
                 if (card.Suit === suit && card.Value === value) {
-                    card.Selected = true;
+                    if (card.Selected) {
+                        card.Selected = false;
+                    } else {
+                        card.Selected = true;
+                    }
                 }
             });
-
             buildPlayerHand();
-
             toggleCardSelect(!cardSelect);
+        }
+    }
+
+    function buildResultBubble(status) {
+        if (status) {
+            let color = undefined,
+                border = undefined;
+            if (status.includes("lost") || status.includes("folded")) {
+                color = "red";
+            } else if (status.includes("win")) {
+                color = "green";
+            }
+            border = `3px ${color} solid`;
+
+            return setResultBubble(
+                <div
+                    className="resultBubble"
+                    style={{ border: border, backgroundColor: color }}
+                >
+                    {status}
+                </div>
+            );
+        } else {
+            return null;
         }
     }
 
@@ -376,12 +417,24 @@ export default function Cardtable({ advDealer }) {
                     <div className="pot-container">Pot: {pot}</div>
                     {/* PLAYER WAGER */}
                     <div className="player-wager-container">
-                        Current Wager: {playerWager}
+                        Current Wager: {playerWager.current}
                     </div>
+                </div>
+                {/* RESULT BUBBLE */}
+                <div className="end-round-container">
+                    {resultBubble}
+                    {!!resultBubble ? (
+                        <button
+                            className="newRound"
+                            onClick={() => handleClick("New")}
+                        >
+                            Start Next<br></br>Round
+                        </button>
+                    ) : null}
                 </div>
                 <div
                     className="draw-button-container"
-                    // style={{ display: drawBtnDisplay.current }}
+                    style={{ display: drawBtnDisplay.current }}
                 >
                     <button
                         className="draw-button"

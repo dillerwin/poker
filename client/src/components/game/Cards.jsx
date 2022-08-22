@@ -45,8 +45,6 @@ export const shuffle = (deck) => {
     return deck;
 };
 
-//FIXME: is allowing discarded cards back into hands
-
 export const draw = (deck, number, user, hand) => {
     //initial draw at the top of the round
     if (!hand) {
@@ -75,22 +73,30 @@ export const draw = (deck, number, user, hand) => {
         } else {
             hand.forEach((card) => (card.Show = false));
         }
-        return [deck, number, user, hand];
+        return hand;
     }
 };
 
 export const discard = (deck, user, hand) => {
-    let count = 0;
-    hand.forEach((card, idx) => {
-        //FIXME: not discarding all Selected cards
-        if (card.Selected) {
-            hand.splice(idx, 1);
+    let count = 0,
+        heldCards = [],
+        length = hand.length;
+
+    for (let i = 0; i < length; i++) {
+        if (!hand[i].Selected) {
+            heldCards.push(hand[i]);
+        } else {
             count++;
         }
-    });
+        hand[i].Selected = false;
+
+        console.groupEnd();
+    }
+
+    hand = heldCards;
+
     try {
-        draw(deck, count, user, hand);
-        return true;
+        return draw(deck, count, user, hand);
     } catch (e) {
         console.warn("oofda, discard's draw call failed for some reason");
         return false;
@@ -100,9 +106,7 @@ export const discard = (deck, user, hand) => {
 //  GOAL: this will judge both hands and determine a winner
 //  - think I'm not gonna include a cheatsheet for the player on if a hand has potential, they'll just need to read their hand lol
 //  - will also be called for dealer to determine which cards to discard/hold during draw phase
-// for now, is just returning true, the house never wins lol
 
-//TODO: add scoring for hands. Ties (very slight possibility) should go to the player
 /*
     hands are scored in this order:
     Royal Flush - 250
@@ -119,6 +123,8 @@ export const discard = (deck, user, hand) => {
 
 //returns boolean
 //if checking both players, true means player won, false means dealer won
+
+//FIXME: function is not necessarily scoring correctly
 export const evaluateHands = (dealerHand, playerHand, phase) => {
     let dealerScore = checkHand(dealerHand),
         playerScore = undefined;
@@ -133,6 +139,10 @@ export const evaluateHands = (dealerHand, playerHand, phase) => {
         ) {
             //if somehow they have the *same* high card
             //tie here goes to the player
+            
+            console.log("dealerScore", dealerScore);
+            console.log("playerScore", playerScore);
+
             if (dealerScore[0] === playerScore[0]) {
                 return dealerScore[1] < playerScore[1];
             } else {
@@ -305,14 +315,6 @@ const checkHand = (hand) => {
         highCard = values.findLastIndex((el) => el > 0);
         nextHigh = getNextHigh(highCard, values);
         score = [highCard, nextHigh];
-    }
-
-    if (typeof score === "number") {
-        for (let i = 0; i < suits.length; i++) {
-            if (suits[i]) {
-                score += (i + 1) * 2;
-            }
-        }
     }
 
     return score;

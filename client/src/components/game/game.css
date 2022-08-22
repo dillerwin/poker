@@ -72,9 +72,26 @@
     margin: 0.5em;
 }
 
+.end-round-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 32%;
+}
+
+.resultBubble {
+    display: flex;
+    /* border: 3px black solid; */
+    border-radius: 10%;
+    padding: 0.5em;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
 .draw-button-container {
     display: flex;
-    margin-left: 32%;
+    /* margin-left: 32%; */
     align-items: center;
 }
 
