@@ -4,7 +4,7 @@ import { getDeck, shuffle, draw, discard, evaluateHands } from "./Cards";
 
 export default function Cardtable({ advDealer }) {
     // const [winStatus, setWinStatus] = useState();
-    const [pot, setPot] = useState(0);
+    // const [pot, setPot] = useState(0);
     const [lastBet, setLastBet] = useState("");
     const [disableBtns, setDisableBtns] = useState(false);
     const [disableChips, setDisableChips] = useState(false);
@@ -16,6 +16,7 @@ export default function Cardtable({ advDealer }) {
     const [playerCards, setPlayerCards] = useState([]);
     const [dealerCards, setDealerCards] = useState([]);
 
+    let pot = useRef(0);
     let dealerBank = useRef(1000);
     let playerBank = useRef(1000);
     let playerWager = useRef(0);
@@ -61,6 +62,7 @@ export default function Cardtable({ advDealer }) {
             })
         );
     }
+
     function buildDealerHand() {
         setDealerCards(
             dealerHand.current.map((card) => {
@@ -106,7 +108,8 @@ export default function Cardtable({ advDealer }) {
             setTimeout(() => {
                 playerBank.current -= 25;
                 dealerBank.current -= 25;
-                setPot(50);
+                // setPot(50);
+                pot.current = 50;
                 playerBank.current !== 0 || dealerBank.current !== 0
                     ? setDisableChips(false)
                     : setDisableChips(true);
@@ -131,8 +134,10 @@ export default function Cardtable({ advDealer }) {
                 if (playerBank.current - 100 > 0) {
                     playerWager.current = playerWager.current + 100;
                     playerBank.current -= 100;
+                    toggleCardSelect(!cardSelect);
                 } else {
-                    playerWager.current = playerWager + playerBank.current;
+                    playerWager.current =
+                        playerWager.current + playerBank.current;
                     playerBank.current = 0;
                     setDisableChips(true);
                 }
@@ -176,6 +181,10 @@ export default function Cardtable({ advDealer }) {
 
         switch (phase.current) {
             case "eval": {
+                console.log("evaluating");
+                toggleCardSelect(!cardSelect);
+                phase.current = "end";
+                endPhase();
                 return null;
             }
             case "bet": {
@@ -192,7 +201,8 @@ export default function Cardtable({ advDealer }) {
                     }
                     phase.current = "discard";
                     drawBtnDisplay.current = "flex";
-                    setPot(pot + playerWager.current + dealerWager.current);
+                    // setPot(pot + playerWager.current + dealerWager.current);
+                    pot.current += playerWager.current + dealerWager.current;
                     playerWager.current = 0;
                     dealerWager.current = 0;
                     setCallOrBet("Call");
@@ -247,23 +257,31 @@ export default function Cardtable({ advDealer }) {
             }
             case "bet2": {
                 setTimeout(() => {
-                    if (dealerBank - playerWager.current < 0) {
-                        let temp = playerWager.current - dealerBank;
-                        playerBank += temp;
-                        playerWager.current = playerWager.current - temp;
-                        dealerWager.current = dealerBank.current;
+                    if (dealerBank.current < playerWager.current) {
+                        let betGap = playerWager.current - dealerBank.current;
+                        playerBank.current += betGap;
+                        playerWager.current += dealerBank.current;
+                        dealerWager.current += dealerBank.current;
                         dealerBank.current = 0;
                     } else {
-                        dealerWager.current = playerWager.current;
-                        dealerBank.current -= playerWager.current;
+                        dealerWager.current += playerWager.current;
+                        dealerBank.current -= dealerWager.current;
                     }
-                    setPot(pot + playerWager.current + dealerWager.current);
-                    playerWager.current = 0;
-                    setCallOrBet("Call");
+
+                    console.log("dealerBank", dealerBank.current);
+                    console.log("dealerWager", dealerWager.current);
+
                     phase.current = "end";
+                    // setPot(pot + playerWager.current + dealerWager.current);
+                    pot.current += playerWager.current + dealerWager.current;
+                    playerWager.current = 0;
+                    dealerWager.current = 0;
+                    setCallOrBet("Call");
                     setDisableBtns(true);
+                    setDisableChips(true);
                     endPhase();
                 }, 500);
+
                 return null;
             }
             case "end": {
@@ -288,8 +306,9 @@ export default function Cardtable({ advDealer }) {
 
                 console.log("evaluate", evaluate);
                 if (evaluate) {
-                    playerBank.current += pot;
-                    setPot(0);
+                    playerBank.current += pot.current;
+                    // setPot(0);
+                    pot.current = 0;
                     if (dealerBank.current <= 0) {
                         advDealer();
                         dealerBank.current = 1000;
@@ -303,8 +322,9 @@ export default function Cardtable({ advDealer }) {
                     }
                     setCallOrBet("Call");
                 } else {
-                    dealerBank.current += pot;
-                    setPot(0);
+                    dealerBank.current += pot.current;
+                    // setPot(0);
+                    pot.current = 0;
                     fold
                         ? buildResultBubble("You folded")
                         : buildResultBubble("You lost");
@@ -341,6 +361,7 @@ export default function Cardtable({ advDealer }) {
                 return;
             }
             case "Clear": {
+                playerBank.current = playerWager.current;
                 playerWager.current = 0;
                 setDisableChips(false);
                 setCallOrBet("Call");
@@ -414,7 +435,7 @@ export default function Cardtable({ advDealer }) {
                         Dealer's Wager: {dealerWager.current}
                     </div>
                     {/* BET POOL */}
-                    <div className="pot-container">Pot: {pot}</div>
+                    <div className="pot-container">Pot: {pot.current}</div>
                     {/* PLAYER WAGER */}
                     <div className="player-wager-container">
                         Current Wager: {playerWager.current}
